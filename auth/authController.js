@@ -15,18 +15,6 @@ var config = require('../config');
 
 router.post('/register', (req, res) => {
     var hashedPassword = bcrypt.hashSync(req.body.password, 8);
-
-    // User.create({
-    //     name: req.body.name,
-    //     email: req.body.email,
-    //     password: hashedPassword
-    // }, (err, user) => {
-    //     if (err) return res.status(500).json({message: err.message});
-    //     // create a token
-    //     var token = jwt.sign({ id: user._id }, config.secret, {expiresIn: '24h'});
-    //     res.status(200).send({ auth: true, token: token });
-    // }); 
-    
     User.create({
         name: req.body.name,
         email: req.body.email,
@@ -39,31 +27,6 @@ router.post('/register', (req, res) => {
     }); 
 });
 
-// router.get('/me', (req, res, next) => {
-//     var token = req.headers.authorization;
-
-//     if (!token) return res.status(401).send({
-//         auth: false,
-//         message: 'no token provided'
-//     });
-
-//     jwt.verify(token, config.secret, (err, decoded) => {
-//         if (err) {
-//             res.status(500).send({
-//                 auth: false,
-//                 message: 'failed to authenticate token'
-//             });
-//         } else {
-//             User.findById(decoded.id, {password: 0})    // THIS THING CALL PROJECTION
-//                 .then(data => {
-//                     res.status(200).send(data);
-//                     // next(data);
-//                 })
-//                 .catch(err => res.status(500).send(err));
-//         }
-//     });
-// });
-
 router.get('/me', verifyToken, (req, res) => {
     User.findById(req.id, {password: 0})
         .then(data => {
@@ -73,11 +36,6 @@ router.get('/me', verifyToken, (req, res) => {
         })
         .catch(err => res.status(500).send(err.message));
 });
-
-// router.use((data, req, res, next) => {
-//     res.status(200).send(data);
-// });
-
 
 router.post('/login', (req, res) => {
     User.findOne({email: req.body.email})
@@ -100,7 +58,6 @@ router.post('/login', (req, res) => {
                         token: null
                     });
                 }
-                // res.status(200).json(data);
             }
         })
         .catch((err) => res.status(500).send(err.message));
